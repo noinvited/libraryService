@@ -1,4 +1,4 @@
-package ru.libraryservice.libraryservice.repos;
+package ru.libraryservice.libraryservice.repo;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import ru.libraryservice.libraryservice.domain.Library;

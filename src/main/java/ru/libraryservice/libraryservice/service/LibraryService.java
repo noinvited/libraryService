@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import ru.libraryservice.libraryservice.domain.Library;
 import ru.libraryservice.libraryservice.dto.LibraryResponse;
 import ru.libraryservice.libraryservice.exception.BadLibraryRequestException;
-import ru.libraryservice.libraryservice.repos.LibraryRepo;
+import ru.libraryservice.libraryservice.repo.LibraryRepo;
 
 import java.util.List;
 import java.util.stream.Collectors;

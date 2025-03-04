@@ -1,28 +1,31 @@
 package ru.libraryservice.libraryservice;
 
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
-import org.springframework.test.web.servlet.MockMvc;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
-@SpringBootTest
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Testcontainers
-@AutoConfigureMockMvc
 class LibraryServiceApplicationTests {
     @Autowired
-    private MockMvc mockMvc;
+    private TestRestTemplate restTemplate;
+
+    private String libraryByIdTestCorrectCheck = "{\"name\":\"№1\",\"location\":\"New York\"}";
+    private String libraryByIdTestIncorrectCheck = "{\"message\":\"Library not found\",\"id\":20}";
+    private String allLibraryTestCorrectCheck = "[{\"name\":\"№1\",\"location\":\"New York\"},{\"name\":\"№2\",\"location\":\"Los Angeles\"},{\"name\":\"№3\",\"location\":\"Chicago\"},{\"name\":\"№4\",\"location\":\"Houston\"},{\"name\":\"№5\",\"location\":\"Phoenix\"},{\"name\":\"№6\",\"location\":\"Philadelphia\"},{\"name\":\"№7\",\"location\":\"San AntonioX\"},{\"name\":\"№8\",\"location\":\"San Diego\"}]";
 
     @Container
     private static final PostgreSQLContainer<?> postgresqlContainer = new PostgreSQLContainer<>("postgres:13")
@@ -38,77 +41,32 @@ class LibraryServiceApplicationTests {
     }
 
     @Test
-    void GetLibraryByIdTestCorrect() throws Exception {
-        mockMvc.perform(get("/libraries/1"))
-                .andExpectAll(
-                        status().isOk(),
-                        content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON),
-                        content().json("""
-                                        {
-											"name": "№1",
-											"location": "New York"
-										}
-                                        """)
-                );
+    @DisplayName("Информация о библиотеке по id")
+    void GetLibraryByIdTestCorrect() {
+        ResponseEntity<String> response = restTemplate.getForEntity("/libraries/1", String.class);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertTrue(response.getHeaders().getContentType().isCompatibleWith(MediaType.APPLICATION_JSON));
+        assertEquals(libraryByIdTestCorrectCheck, response.getBody());
     }
 
     @Test
-    void GetLibraryByIdTestIncorrect() throws Exception {
-        mockMvc.perform(get("/libraries/20"))
-                .andExpectAll(
-                        status().isBadRequest(),
-                        content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON),
-                        content().json("""
-                                        {
-                                            "message": "Library not found",
-                                            "id": 20
-                                        }                                       
-                                        """)
-                );
+    @DisplayName("Поиск несуществующей библиотеки")
+    void GetLibraryByIdTestIncorrect() {
+        ResponseEntity<String> response = restTemplate.getForEntity("/libraries/20", String.class);
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertTrue(response.getHeaders().getContentType().isCompatibleWith(MediaType.APPLICATION_JSON));
+        assertEquals(libraryByIdTestIncorrectCheck, response.getBody());
     }
 
     @Test
-    void GetAllLibraryTestCorrect() throws Exception {
-        mockMvc.perform(get("/libraries"))
-                .andExpectAll(
-                        status().isOk(),
-                        content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON),
-                        content().json("""
-                                        [
-                                            {
-                                                "name": "№1",
-                                                "location": "New York"
-                                            },
-                                            {
-                                                "name": "№2",
-                                                "location": "Los Angeles"
-                                            },
-                                            {
-                                                "name": "№3",
-                                                "location": "Chicago"
-                                            },
-                                            {
-                                                "name": "№4",
-                                                "location": "Houston"
-                                            },
-                                            {
-                                                "name": "№5",
-                                                "location": "Phoenix"
-                                            },
-                                            {
-                                                "name": "№6",
-                                                "location": "Philadelphia"
-                                            },
-                                            {
-                                                "name": "№7",
-                                                "location": "San AntonioX"
-                                            },
-                                            {
-                                                "name": "№8",
-                                                "location": "San Diego"
-                                            }
-                                        ]
-                                        """)
-                );
+    @DisplayName("Информация о всех библиотеках")
+    void GetAllLibraryTestCorrect() {
+        ResponseEntity<String> response = restTemplate.getForEntity("/libraries", String.class);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertTrue(response.getHeaders().getContentType().isCompatibleWith(MediaType.APPLICATION_JSON));
+        assertEquals(allLibraryTestCorrectCheck, response.getBody());
     }
 }

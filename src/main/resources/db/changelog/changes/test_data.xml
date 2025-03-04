@@ -1,0 +1,43 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <changeSet id="test.data.xml" author="mnrodionov">
+        <comment>добавление тестовых данных</comment>
+        <insert tableName="library" schemaName="public">
+            <column name="name" value="№1"/>
+            <column name="location" value="New York"/>
+        </insert>
+        <insert tableName="library" schemaName="public">
+            <column name="name" value="№2"/>
+            <column name="location" value="Los Angeles"/>
+        </insert>
+        <insert tableName="library" schemaName="public">
+            <column name="name" value="№3"/>
+            <column name="location" value="Chicago"/>
+        </insert>
+        <insert tableName="library" schemaName="public">
+            <column name="name" value="№4"/>
+            <column name="location" value="Houston"/>
+        </insert>
+        <insert tableName="library" schemaName="public">
+            <column name="name" value="№5"/>
+            <column name="location" value="Phoenix"/>
+        </insert>
+        <insert tableName="library" schemaName="public">
+            <column name="name" value="№6"/>
+            <column name="location" value="Philadelphia"/>
+        </insert>
+        <insert tableName="library" schemaName="public">
+            <column name="name" value="№7"/>
+            <column name="location" value="San AntonioX"/>
+        </insert>
+        <insert tableName="library" schemaName="public">
+            <column name="name" value="№8"/>
+            <column name="location" value="San Diego"/>
+        </insert>
+    </changeSet>
+
+</databaseChangeLog>
